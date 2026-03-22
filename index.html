@@ -767,10 +767,9 @@ function openBadge(id) {
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function closeModal(event) {
-  if (!event || event.target === document.getElementById('modal-overlay')) {
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay'))
     document.getElementById('modal-overlay').classList.remove('open');
-  }
 }
 
 // INIT
