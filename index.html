@@ -766,8 +766,11 @@ function openBadge(id) {
   document.getElementById('modal-lock-note').textContent=unlocked?'✓ You have earned this badge!':'Log more sightings to unlock this badge.';
   document.getElementById('modal-overlay').classList.add('open');
 }
-ment.getElementById('modal-overlay'))
+
+function closeModal(event) {
+  if (!event || event.target === document.getElementById('modal-overlay')) {
     document.getElementById('modal-overlay').classList.remove('open');
+  }
 }
 
 // INIT
@@ -775,6 +778,3 @@ window.addEventListener('load', function() {
   initMap();
   renderAll();
 });
-</script>
-</body>
-</html>
