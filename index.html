@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>St. Louis Wasp Watch — Miller Lab, UMSL</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -533,7 +533,7 @@ footer { background: var(--dark-brown); color: rgba(255,255,255,0.5); padding: 5
   <div class="footer-copy">© 2026 Miller Lab, UMSL</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 <script>
 const STORAGE_KEY = 'stl_wasp_watch_v3';
 function loadSightings() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch(e) { return []; } }
@@ -601,12 +601,15 @@ function getCoords(loc) {
 // MAP
 let map, markersLayer;
 function initMap() {
-  map = L.map('sighting-map',{zoomControl:true}).setView([38.6270,-90.1994],11);
-  // Dark tiles from AI Studio version
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-    attribution:'© OpenStreetMap contributors © CARTO', maxZoom:19
-  }).addTo(map);
-  markersLayer = L.layerGroup().addTo(map);
+  try {
+    map = L.map('sighting-map',{zoomControl:true}).setView([38.6270,-90.1994],11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      attribution:'© OpenStreetMap contributors © CARTO', maxZoom:19
+    }).addTo(map);
+    markersLayer = L.layerGroup().addTo(map);
+  } catch(e) {
+    document.getElementById('sighting-map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f5f5f0;border-radius:20px;font-family:sans-serif;color:#888;font-size:15px;">Map loading... please refresh the page.</div>';
+  }
 }
 function markerColor(s) {
   if (s.gps) return '#3B82F6';
