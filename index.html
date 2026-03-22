@@ -603,8 +603,8 @@ let map, markersLayer;
 function initMap() {
   try {
     map = L.map('sighting-map',{zoomControl:true}).setView([38.6270,-90.1994],11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-      attribution:'© OpenStreetMap contributors © CARTO', maxZoom:19
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom:19
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
   } catch(e) {
@@ -766,5 +766,15 @@ function openBadge(id) {
   document.getElementById('modal-lock-note').textContent=unlocked?'✓ You have earned this badge!':'Log more sightings to unlock this badge.';
   document.getElementById('modal-overlay').classList.add('open');
 }
-function closeModal(e) {
-  if(!e||e.target===docu
+ment.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// INIT
+window.addEventListener('load', function() {
+  initMap();
+  renderAll();
+});
+</script>
+</body>
+</html>
