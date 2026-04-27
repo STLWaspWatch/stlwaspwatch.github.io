@@ -824,13 +824,21 @@ function renderAll() {
   document.getElementById('neighborhood-count').textContent=hoods;
   updateMap(s);
 
-  // Leaderboard
-  const counts={};
-  s.forEach(x=>{const k=(x.name||'').trim();if(k)counts[k]=(counts[k]||0)+1;});
+  // Leaderboard — group case-insensitively, display the most recent casing used
+  const counts={};      // key: lowercased name, val: count
+  const displayName={}; // key: lowercased name, val: most recent casing
+  s.forEach(x=>{
+    const raw=(x.name||'').trim();
+    if(!raw) return;
+    const key=raw.toLowerCase();
+    counts[key]=(counts[key]||0)+1;
+    // s is sorted newest-first, so the first time we see a key is the most recent
+    if(!(key in displayName)) displayName[key]=raw;
+  });
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const lbEl=document.getElementById('leaderboard-list');
   if(!sorted.length){lbEl.innerHTML='<div class="lb-empty">No sightings yet.<br>Be the first reporter!</div>';}
-  else{const medals=['🥇','🥈','🥉'];lbEl.innerHTML=sorted.map(([name,count],i)=>`<div class="lb-row"><div class="lb-rank">${medals[i]||(i+1)}</div><div class="lb-avatar" style="background:${avatarColor(name)}">${initials(name)}</div><div class="lb-info"><div class="lb-name">${name}</div><div class="lb-count">${count} sighting${count>1?'s':''}</div></div>${i===0?'<div class="lb-badge">Top spotter</div>':''}</div>`).join('');}
+  else{const medals=['🥇','🥈','🥉'];lbEl.innerHTML=sorted.map(([key,count],i)=>{const name=displayName[key];return `<div class="lb-row"><div class="lb-rank">${medals[i]||(i+1)}</div><div class="lb-avatar" style="background:${avatarColor(name)}">${initials(name)}</div><div class="lb-info"><div class="lb-name">${name}</div><div class="lb-count">${count} sighting${count>1?'s':''}</div></div>${i===0?'<div class="lb-badge">Top spotter</div>':''}</div>`;}).join('');}
 
   // Recent feed
   const feedEl=document.getElementById('recent-feed');
@@ -839,8 +847,8 @@ function renderAll() {
   else{feedEl.innerHTML=recent.map(x=>`<div class="feed-item"><div class="feed-dot"></div><div><div class="feed-text"><strong>${x.name}</strong> spotted a nest in <strong>${x.location}</strong>${x.size?' · '+x.size:''}${x.foundress?' · '+x.foundress:''}${x.hasPhoto?' 📸':''}${x.gps?' 📍':''}</div><div class="feed-time">${timeAgo(x.timestamp)}</div></div></div>`).join('');}
 
   // Badges (shown for the top spotter)
-  const featuredName=sorted.length>0?sorted[0][0]:null;
-  const mine=featuredName?s.filter(x=>x.name.trim().toLowerCase()===featuredName.toLowerCase()):[];
+  const featuredKey=sorted.length>0?sorted[0][0]:null;
+  const mine=featuredKey?s.filter(x=>x.name.trim().toLowerCase()===featuredKey):[];
   const badgesGrid=document.getElementById('badges-grid');
   badgesGrid.innerHTML=BADGE_DEFS.map(b=>{
     const unlocked=mine.length>0&&b.check(s,mine);
